@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tweet")
@@ -21,7 +22,7 @@ public class Tweet {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "tweet_id")
-    private Long id;
+    private UUID id;
 
     @ManyToOne()
     @JoinColumn(name = "user_id")
@@ -32,3 +33,4 @@ public class Tweet {
     @CreationTimestamp
     private Instant createdAt;
 }
+
