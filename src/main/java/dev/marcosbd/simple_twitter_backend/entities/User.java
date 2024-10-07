@@ -41,7 +41,7 @@ public class User {
     private Set<Role> role;
 
     public boolean isCorrectCredentials(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(loginRequest.password(), this.password);
+        return passwordEncoder.matches(loginRequest.getPassword(), this.password);
     }
 
 }
