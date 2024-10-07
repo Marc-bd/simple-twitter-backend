@@ -1,14 +1,15 @@
-package dev.marcosbd.simple_twitter_backend.dtos.login;
+package dev.marcosbd.simple_twitter_backend.dtos.user;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class CreateUserDTO {
 
     @NotBlank(message = "required field")
-    private String email;
+    private String username;
     @NotBlank(message = "required field")
     private String password;
-
-
+    @NotBlank(message = "required field")
+    private String email;
 }

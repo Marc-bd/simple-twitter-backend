@@ -36,7 +36,7 @@ public class TokenController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        Optional<User> user =  userRepository.findByEmail(loginRequest.email());
+        Optional<User> user =  userRepository.findByEmail(loginRequest.getEmail());
 
         if(user.isEmpty() || !user.get().isCorrectCredentials(loginRequest, passwordEncoder)) {
             throw new BadCredentialsException("Invalid email or password");
