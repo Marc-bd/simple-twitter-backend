@@ -1,10 +1,14 @@
 package dev.marcosbd.simple_twitter_backend.services.tweetServices;
 
+import dev.marcosbd.simple_twitter_backend.dtos.feed.FeedItemDTO;
 import dev.marcosbd.simple_twitter_backend.dtos.tweet.CreateTweetDTO;
 import dev.marcosbd.simple_twitter_backend.entities.Tweet;
 import dev.marcosbd.simple_twitter_backend.entities.User;
 import dev.marcosbd.simple_twitter_backend.repositories.TweetRepository;
 import dev.marcosbd.simple_twitter_backend.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -72,9 +76,19 @@ public class TweetService {
         if(!tweet.get().getUser().getId().equals(userId)) {
             throw new RuntimeException("This tweet does not belong to the user.");
         }
-
         tweetRepository.delete(tweet.get());
+    }
+
+
+    public Page<FeedItemDTO> feed(int page, int pageSize) {
+
+        Page<FeedItemDTO> tweets = tweetRepository
+                .findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "createdAt"))
+                .map(tweet -> new FeedItemDTO(tweet.getId(), tweet.getContent(), tweet.getUser().getId().toString()));
+
+        return tweets;
 
     }
+
 
 }
