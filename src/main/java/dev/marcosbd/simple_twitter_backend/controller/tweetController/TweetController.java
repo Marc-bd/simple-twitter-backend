@@ -1,10 +1,13 @@
 package dev.marcosbd.simple_twitter_backend.controller.tweetController;
 
 
+import dev.marcosbd.simple_twitter_backend.dtos.feed.FeedItemDTO;
+import dev.marcosbd.simple_twitter_backend.dtos.feed.FeedRequestDTO;
 import dev.marcosbd.simple_twitter_backend.dtos.tweet.CreateTweetDTO;
 import dev.marcosbd.simple_twitter_backend.entities.Tweet;
 import dev.marcosbd.simple_twitter_backend.services.tweetServices.TweetService;
 import org.apache.coyote.Response;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -57,9 +60,21 @@ public class TweetController {
         tweetService.DeleteTweet(tweetId, userId);
 
         return ResponseEntity.noContent().build();
-
-
     }
 
+    @GetMapping("/feed")
+    public ResponseEntity<FeedRequestDTO> feed(
+            @RequestParam(value = "page", defaultValue = "0")
+            int page,
+            @RequestParam(value = "pageSize", defaultValue = "10")
+            int pageSize) {
+
+        Page<FeedItemDTO> feed = tweetService.feed(page, pageSize);
+
+        FeedRequestDTO response = new FeedRequestDTO(feed.getContent(), page, pageSize, feed.getTotalPages(), feed.getTotalElements());
+
+        return ResponseEntity.ok().body(response);
+
+    }
 
 }
