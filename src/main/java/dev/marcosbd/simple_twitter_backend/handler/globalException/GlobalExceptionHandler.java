@@ -2,6 +2,7 @@ package dev.marcosbd.simple_twitter_backend.handler.globalException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class GlobalExceptionHandler {
         Map<String, String> errorMap = new HashMap<>();
         ExceptionMessage exceptionMessage = new ExceptionMessage();
         exceptionMessage.setError(errorMap);
-        errorMap.put("json", exception.getMessage());
+        errorMap.put("json", "invalid json");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
     }
 
@@ -52,8 +53,18 @@ public class GlobalExceptionHandler {
         Map<String, String> errorMap = new HashMap<>();
         ExceptionMessage exceptionMessage = new ExceptionMessage();
         exceptionMessage.setError(errorMap);
-        errorMap.put("owner", "owner already exists");
+        errorMap.put( "error",  exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    private ResponseEntity<ExceptionMessage> handleGenericException(NullPointerException exception) {
+        Map<String, String> errorMap = new HashMap<>();
+        ExceptionMessage exceptionMessage = new ExceptionMessage();
+        errorMap.put("error",  "Null values are not allowed");
+        exceptionMessage.setError(errorMap);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionMessage);
     }
 
     @ExceptionHandler(Exception.class)
@@ -63,6 +74,7 @@ public class GlobalExceptionHandler {
         ExceptionMessage exceptionMessage = new ExceptionMessage();
         errorMap.put("error", exception.getMessage() != null ? exception.getMessage() : "An unexpected error occurred");
         exceptionMessage.setError(errorMap);
+        System.out.println("asdasd: " + exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionMessage);
     }
 

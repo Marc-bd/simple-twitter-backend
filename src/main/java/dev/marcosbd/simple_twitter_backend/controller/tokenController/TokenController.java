@@ -3,6 +3,7 @@ package dev.marcosbd.simple_twitter_backend.controller.tokenController;
 
 import dev.marcosbd.simple_twitter_backend.dtos.login.LoginRequest;
 import dev.marcosbd.simple_twitter_backend.dtos.login.LoginResponse;
+import dev.marcosbd.simple_twitter_backend.entities.Role;
 import dev.marcosbd.simple_twitter_backend.entities.User;
 import dev.marcosbd.simple_twitter_backend.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class TokenController {
@@ -42,19 +44,19 @@ public class TokenController {
             throw new BadCredentialsException("Invalid email or password");
         }
 
+        var scopes = user.get().getRole().stream().map(Role::getName).collect(Collectors.joining(" "));
+
         var claims = JwtClaimsSet.builder()
                 .subject(user.get().getId().toString())
-                .expiresAt(Instant.now().plusSeconds(86400))
                 .issuedAt(Instant.now())
+                .claim("scope", scopes)
+                .expiresAt(Instant.now().plusSeconds(86400))
                 .build();
 
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
         return ResponseEntity.ok(new LoginResponse(jwtValue, 86400L));
-
-
-
 
     }
 }
